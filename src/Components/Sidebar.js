@@ -11,12 +11,19 @@ import StorefrontIcon from '@material-ui/icons/Storefront';
 import VideoLibraryIcon from '@material-ui/icons/VideoLibrary';
 import ExpandMoreOutlined from '@material-ui/icons/ExpandMoreOutlined';
 
+import { useSelector } from 'react-redux';
+import { selectUser } from '../features/userSlice';
+
 const Sidebar = () => {
+
+    const user = useSelector(selectUser);
 
     return (
         <div className='sidebar'>
-            {/* <SidebarRow src={user.photoURL} title={user.displayName} /> */}
-            <SidebarRow src='https://p73.f4.n0.cdn.getcloudapp.com/items/bLuwqPyJ/favicon.png?source=client&v=01b1e436c03e167d3b2b466f75c184a1' title='Nameless Order' />
+            <SidebarRow
+                src={user.photo}
+                title={user.displayName}
+            />
             <SidebarRow Icon={LocalHospitalIcon} title='COVID-19 Information Center' />
 
             <SidebarRow Icon={EmojiFlagsIcon} title='Pages' />

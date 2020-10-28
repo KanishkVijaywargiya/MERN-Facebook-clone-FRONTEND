@@ -7,11 +7,17 @@ import VideocamIcon from '@material-ui/icons/Videocam'
 import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary'
 import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon'
 
+import axios from '../axios';
+import FormData from 'form-data';
+import { useSelector } from 'react-redux';
+import { selectUser } from '../features/userSlice';
 
 function MessageSender() {
 
     const [input, setInput] = useState('');
     const [image, setImage] = useState(null);
+    const [imageUrl, setImageUrl] = useState('');
+    const user = useSelector(selectUser);
 
     const handleChange = (e) => {
         if (e.target.files[0]) {
@@ -20,19 +26,64 @@ function MessageSender() {
     }
 
     const handleSubmit = async (e) => {
-        console.log('submit');
+        e.preventDefault()
+
+        if (image) {
+            const imgForm = new FormData()
+            imgForm.append('file', image, image.name)
+
+            axios.post('/upload/image', imgForm, {
+                headers: {
+                    'accept': 'application/json',
+                    'Accept-Language': 'en-US,en;q=0.8',
+                    'Content-Type': `multipart/form-data; boundary=${imgForm._boundary}`
+                }
+            }).then((res) => {
+                console.log(res.data)
+
+                const postData = {
+                    text: input,
+                    imgName: res.data.filename,
+                    user: user.displayName,
+                    avatar: user.photoURL,
+                    timestamp: Date.now()
+                }
+                console.log(postData)
+                savePost(postData)
+            })
+        } else {
+            const postData = {
+                text: input,
+                user: user.displayName,
+                avatar: user.photoURL,
+                timestamp: Date.now()
+            }
+            console.log(postData)
+            savePost(postData)
+        }
+
+        setImageUrl('')
+        setInput('')
+        setImage(null)
+    }
+
+    const savePost = async (postData) => {
+        await axios.post('/upload/post', postData)
+            .then((res) => {
+                console.log(res);
+            })
     }
 
     return (
         <div className='messageSender'>
             <div className="messageSender__top">
-                <Avatar src='https://p73.f4.n0.cdn.getcloudapp.com/items/eDuPn4lR/rn.png?v=535d68bdc4b042532f723ede82dfbffb' />
+                <Avatar src={user.photo} />
 
                 <form>
                     <input
                         type="text"
                         className='messageSender__input'
-                        placeholder="What's on your mind? ${user.displayName}"
+                        placeholder={`What's on your mind? ${user.displayName}`}
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                     />

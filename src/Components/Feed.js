@@ -5,22 +5,42 @@ import MessageSender from './MessageSender'
 import Post from './Post'
 import StoryReel from './StoryReel'
 
+import axios from '../axios';
+import Pusher from 'pusher-js';
+
+const pusher = new Pusher('08552f2aae05c3e4d429', {
+    cluster: 'ap2'
+});
+
 const Feed = () => {
+
+    const [postsData, setPostsData] = useState([]);
+
+    const syncFeed = () => {
+        axios.get('/retrieve/posts')
+            .then((res) => {
+                console.log(res.data)
+                setPostsData(res.data)
+            })
+    }
+
+    useEffect(() => {
+        const channel = pusher.subscribe('posts');
+        channel.bind('inserted', function (data) {
+            syncFeed()
+        });
+    }, [])
+
+    useEffect(() => {
+        syncFeed()
+    }, [])
 
     return (
         <div className='feed' >
             <StoryReel />
             <MessageSender />
 
-            <Post
-                profilePic='https://p73.f4.n0.cdn.getcloudapp.com/items/eDuPn4lR/rn.png?v=535d68bdc4b042532f723ede82dfbffb'
-                message='Hello People!'
-                timestamp='time'
-                imgName='imgName'
-                username='Nameless Order'
-            />
-
-            {/* {
+            {
                 postsData.map(entry => (
                     <Post
                         profilePic={entry.avatar}
@@ -28,9 +48,10 @@ const Feed = () => {
                         timestamp={entry.timestamp}
                         imgName={entry.imgName}
                         username={entry.user}
+
                     />
                 ))
-            } */}
+            }
         </div>
     )
 }

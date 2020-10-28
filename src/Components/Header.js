@@ -13,11 +13,18 @@ import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { Avatar, IconButton } from '@material-ui/core';
+import { auth } from '../firebase';
+import { useSelector } from 'react-redux';
+import { selectUser } from '../features/userSlice';
+
 
 const Header = () => {
+
+    const user = useSelector(selectUser);
+
+
     return (
         <div className='header'>
-
             <div className="header__left">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1200px-Facebook_Logo_%282019%29.png" alt="Facebook logo" />
             </div>
@@ -47,8 +54,8 @@ const Header = () => {
 
             <div className="header__right">
                 <div className="header__info">
-                    <Avatar src='https://p73.f4.n0.cdn.getcloudapp.com/items/bLuwqPyJ/favicon.png?source=client&v=01b1e436c03e167d3b2b466f75c184a1' />
-                    <h4>Nameless Order</h4>
+                    <Avatar src={user.photo} onClick={() => auth.signOut()} />
+                    <h4>{user.displayName}</h4>
                 </div>
 
                 <IconButton>
