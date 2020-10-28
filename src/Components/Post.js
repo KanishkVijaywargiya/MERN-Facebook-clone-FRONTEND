@@ -9,11 +9,17 @@ import NearMeIcon from '@material-ui/icons/NearMe';
 import ExpandMoreOutlined from '@material-ui/icons/ExpandMoreOutlined';
 import AccountCircleIclon from '@material-ui/icons/AccountCircle';
 
+import { useSelector } from 'react-redux';
+import { selectUser } from '../features/userSlice';
+
 const Post = ({ profilePic, imgName, username, timestamp, message }) => {
+
+    const user = useSelector(selectUser);
+
     return (
         <div className='post'>
             <div className="post__top">
-                <Avatar src={profilePic} className='post__avatar' />
+                <Avatar src={user.photo} className='post__avatar' />
                 <div className="post__topInfo">
                     <h3>{username}</h3>
                     <p>{new Date(parseInt(timestamp)).toDateString()}</p>
